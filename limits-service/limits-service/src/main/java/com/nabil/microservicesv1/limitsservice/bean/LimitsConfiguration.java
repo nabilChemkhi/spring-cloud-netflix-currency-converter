@@ -12,5 +12,6 @@ public class LimitsConfiguration {
 
     private int maximum;
     private int minimum;
+    private  String message1;
 }
 

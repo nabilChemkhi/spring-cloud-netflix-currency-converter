@@ -24,4 +24,13 @@ public class ExchangeValue {
     @Column(name = "conversion_multiple")
     private BigDecimal conversionMultiple;
     private  int myport;
+
+    public ExchangeValue(Long id, String from, String to, BigDecimal conversionMultiple) {
+        super();
+        this.id = id;
+        this.from = from;
+        this.to = to;
+        this.conversionMultiple = conversionMultiple;
+    }
+
 }

@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nabil
+      POSTGRES_PASSWORD: nabil
+      POSTGRES_DB: vault
+    volumes:
+      - limits_pgdata2:/var/lib/postgresql/data
+      - ./vault/sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - limits  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: imakerpass
+    volumes:
+      - limits-data2:/var/lib/pgadmin
+    networks:
+      - limits 
+  vault:
+    image: vault:latest
+    container_name: vault
+    ports:
+      - "8200:8200"
+    restart: always
+    volumes:
+      - ./vault/config:/vault/config
+      #- ./vault/policies:/vault/policies
+      #- ./vault/data:/vault/data
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+      - VAULT_DEV_ROOT_TOKEN_ID:root
+      #- connection_url: postgres://postgres:imakeruser@imakerpass:5432
+    depends_on:
+      - postgres
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - limits  
+#    entrypoint: vault server -config=/vault/config/vault.hcl
+    command: vault server -config=/vault/config/vault.json
+   
+   
+volumes:
+  limits_pgdata2:
+  limits-data2:
+networks:
+  limits:  
